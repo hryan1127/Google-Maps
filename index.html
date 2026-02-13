@@ -1,43 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Interactive Globe</title>
+  <meta charset="UTF-8" />
+  <title>Animated Globe</title>
   <style>
-    body { margin: 0; }
-    canvas { display: block; }
+    body { margin: 0; overflow: hidden; }
   </style>
 </head>
 <body>
 
-<!-- Include Three.js from CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+<script type="module">
+  import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
 
-<script>
-// Basic Three.js setup
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.z = 3;
+  // Scene
+  const scene = new THREE.Scene();
 
-// Renderer setup
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+  // Camera
+  const camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+  );
+  camera.position.z = 3;
 
-// Create a Sphere (globe)
-const geometry = new THREE.SphereGeometry(1, 32, 32);
-const texture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/earth_atmos_2048.jpg'); // Earth texture
-const material = new THREE.MeshBasicMaterial({ map: texture });
-const globe = new THREE.Mesh(geometry, material);
-scene.add(globe);
+  // Renderer
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
 
-// Animation loop
-function animate() {
-  requestAnimationFrame(animate);
-  globe.rotation.y += 0.002;  // Rotate globe
-  renderer.render(scene, camera);
-}
-animate();
+  // Lighting (makes globe look better)
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(5, 3, 5);
+  scene.add(light);
+
+  const ambient = new THREE.AmbientLight(0x404040);
+  scene.add(ambient);
+
+  // Globe geometry
+  const geometry = new THREE.SphereGeometry(1, 64, 64);
+
+  // Use simple color first (NO texture to avoid CORS issues)
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x2266cc
+  });
+
+  const globe = new THREE.Mesh(geometry, material);
+  scene.add(globe);
+
+  // Animation loop
+  function animate() {
+    requestAnimationFrame(animate);
+    globe.rotation.y += 0.003;
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  // Handle resizing
+  window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
 </script>
 
 </body>
