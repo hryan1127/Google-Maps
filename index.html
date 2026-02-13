@@ -1,6 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Animated Earth Globe</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+  </style>
+</head>
+<body>
+
 <script type="module">
   import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
 
+  // -----------------------
+  // Scene Setup
+  // -----------------------
   const scene = new THREE.Scene();
 
   const camera = new THREE.PerspectiveCamera(
@@ -13,21 +31,26 @@
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
   document.body.appendChild(renderer.domElement);
 
-  const light = new THREE.DirectionalLight(0xffffff, 1);
-  light.position.set(5, 3, 5);
-  scene.add(light);
+  // -----------------------
+  // Lighting
+  // -----------------------
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+  directionalLight.position.set(5, 3, 5);
+  scene.add(directionalLight);
 
-  const ambient = new THREE.AmbientLight(0x404040);
-  scene.add(ambient);
+  const ambientLight = new THREE.AmbientLight(0x404040, 1);
+  scene.add(ambientLight);
 
-  // Globe geometry
+  // -----------------------
+  // Globe Geometry
+  // -----------------------
   const geometry = new THREE.SphereGeometry(1, 64, 64);
 
-  // ✅ Load texture from your GitHub Pages site (same folder as index.html)
   const loader = new THREE.TextureLoader();
-  const earthTexture = loader.load("./earth");
+  const earthTexture = loader.load("./BlankMap-World-Equirectangular.svg.png");
 
   const material = new THREE.MeshStandardMaterial({
     map: earthTexture
@@ -36,16 +59,27 @@
   const globe = new THREE.Mesh(geometry, material);
   scene.add(globe);
 
+  // -----------------------
+  // Animation Loop
+  // -----------------------
   function animate() {
     requestAnimationFrame(animate);
     globe.rotation.y += 0.003;
     renderer.render(scene, camera);
   }
+
   animate();
 
+  // -----------------------
+  // Responsive Resize
+  // -----------------------
   window.addEventListener("resize", () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
+
 </script>
+
+</body>
+</html>
