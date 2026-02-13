@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Three.js Globe</title>
+  <title>Interactive Globe</title>
   <style>
     body { margin: 0; }
     canvas { display: block; }
@@ -33,7 +33,7 @@ scene.add(globe);
 // Animation
 function animate() {
   requestAnimationFrame(animate);
-  globe.rotation.y += 0.002;
+  globe.rotation.y += 0.002;  // Rotate globe
   renderer.render(scene, camera);
 }
 animate();
