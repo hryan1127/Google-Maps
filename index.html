@@ -4,11 +4,7 @@
   <meta charset="UTF-8" />
   <title>Animated Earth Globe</title>
   <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: black;
-    }
+    body { margin: 0; overflow: hidden; background: black; }
   </style>
 </head>
 <body>
@@ -16,9 +12,6 @@
 <script type="module">
   import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
 
-  // -----------------------
-  // Scene Setup
-  // -----------------------
   const scene = new THREE.Scene();
 
   const camera = new THREE.PerspectiveCamera(
@@ -34,52 +27,56 @@
   renderer.setPixelRatio(window.devicePixelRatio);
   document.body.appendChild(renderer.domElement);
 
-  // -----------------------
-  // Lighting
-  // -----------------------
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
-  directionalLight.position.set(5, 3, 5);
-  scene.add(directionalLight);
+  // Lights
+  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
 
-  const ambientLight = new THREE.AmbientLight(0x404040, 1);
-  scene.add(ambientLight);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+  dirLight.position.set(5, 3, 5);
+  scene.add(dirLight);
 
-  // -----------------------
-  // Globe Geometry
-  // -----------------------
+  // Globe geometry
   const geometry = new THREE.SphereGeometry(1, 64, 64);
 
+  // Load texture (make sure this matches your real filename/path)
   const loader = new THREE.TextureLoader();
-  const earthTexture = loader.load("./earth");
 
-  const material = new THREE.MeshStandardMaterial({
-    map: earthTexture
-  });
+  loader.load(
+    "./earth",
+    (texture) => {
+      console.log("✅ Texture loaded!", texture);
 
-  const globe = new THREE.Mesh(geometry, material);
-  scene.add(globe);
+      // IMPORTANT for correct brightness in modern Three.js
+      texture.colorSpace = THREE.SRGBColorSpace;
 
-  // -----------------------
-  // Animation Loop
-  // -----------------------
-  function animate() {
-    requestAnimationFrame(animate);
-    globe.rotation.y += 0.003;
-    renderer.render(scene, camera);
-  }
+      const material = new THREE.MeshStandardMaterial({
+        map: texture
+      });
 
-  animate();
+      const globe = new THREE.Mesh(geometry, material);
+      scene.add(globe);
 
-  // -----------------------
-  // Responsive Resize
-  // -----------------------
+      // Animate
+      function animate() {
+        requestAnimationFrame(animate);
+        globe.rotation.y += 0.003;
+        renderer.render(scene, camera);
+      }
+      animate();
+    },
+    undefined,
+    (err) => {
+      console.error("❌ Texture failed to load:", err);
+    }
+  );
+
+  // Resize handling
   window.addEventListener("resize", () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
-
 </script>
 
 </body>
 </html>
+
