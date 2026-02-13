@@ -50,7 +50,7 @@
   const geometry = new THREE.SphereGeometry(1, 64, 64);
 
   const loader = new THREE.TextureLoader();
-  const earthTexture = loader.load("./BlankMap-World-Equirectangular.svg.png");
+  const earthTexture = loader.load("./earth");
 
   const material = new THREE.MeshStandardMaterial({
     map: earthTexture
