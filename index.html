@@ -5,14 +5,40 @@
   <title>Interactive Globe</title>
   <style>
     body { margin: 0; }
-    iframe { display: block; width: 100%; height: 100vh; border: none; }
+    canvas { display: block; }
   </style>
 </head>
 <body>
 
-<!-- Embed Google Earth Web -->
-<iframe src="https://earth.google.com/earth/d/12DVz_CFDL79p4nvV8iaHKTSDzsD8W-ox?usp=sharing" 
-        allowfullscreen></iframe>
+<!-- Include Three.js from CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+
+<script>
+// Basic Three.js setup
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.z = 3;
+
+// Renderer setup
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Create a Sphere (globe)
+const geometry = new THREE.SphereGeometry(1, 32, 32);
+const texture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/earth_atmos_2048.jpg'); // Earth texture
+const material = new THREE.MeshBasicMaterial({ map: texture });
+const globe = new THREE.Mesh(geometry, material);
+scene.add(globe);
+
+// Animation loop
+function animate() {
+  requestAnimationFrame(animate);
+  globe.rotation.y += 0.002;  // Rotate globe
+  renderer.render(scene, camera);
+}
+animate();
+</script>
 
 </body>
 </html>
