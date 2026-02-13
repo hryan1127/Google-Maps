@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Animated Earth Globe</title>
+  <title>Animated Globe</title>
   <style>
-    body { margin: 0; overflow: hidden; background: black; }
+    body { margin: 0; overflow: hidden; }
   </style>
 </head>
 <body>
@@ -12,8 +12,10 @@
 <script type="module">
   import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
 
+  // Scene
   const scene = new THREE.Scene();
 
+  // Camera
   const camera = new THREE.PerspectiveCamera(
     75,
     window.innerWidth / window.innerHeight,
@@ -22,54 +24,40 @@
   );
   camera.position.z = 3;
 
+  // Renderer
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(window.devicePixelRatio);
   document.body.appendChild(renderer.domElement);
 
-  // Lights
-  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+  // Lighting (makes globe look better)
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(5, 3, 5);
+  scene.add(light);
 
-  const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-  dirLight.position.set(5, 3, 5);
-  scene.add(dirLight);
+  const ambient = new THREE.AmbientLight(0x404040);
+  scene.add(ambient);
 
   // Globe geometry
   const geometry = new THREE.SphereGeometry(1, 64, 64);
 
-  // Load texture (make sure this matches your real filename/path)
-  const loader = new THREE.TextureLoader();
+  // Use simple color first (NO texture to avoid CORS issues)
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x2266cc
+  });
 
-  loader.load(
-    "./flat_earth_Largest_still.0330.jpg",
-    (texture) => {
-      console.log("✅ Texture loaded!", texture);
+  const globe = new THREE.Mesh(geometry, material);
+  scene.add(globe);
 
-      // IMPORTANT for correct brightness in modern Three.js
-      texture.colorSpace = THREE.SRGBColorSpace;
+  // Animation loop
+  function animate() {
+    requestAnimationFrame(animate);
+    globe.rotation.y += 0.003;
+    renderer.render(scene, camera);
+  }
 
-      const material = new THREE.MeshStandardMaterial({
-        map: texture
-      });
+  animate();
 
-      const globe = new THREE.Mesh(geometry, material);
-      scene.add(globe);
-
-      // Animate
-      function animate() {
-        requestAnimationFrame(animate);
-        globe.rotation.y += 0.003;
-        renderer.render(scene, camera);
-      }
-      animate();
-    },
-    undefined,
-    (err) => {
-      console.error("❌ Texture failed to load:", err);
-    }
-  );
-
-  // Resize handling
+  // Handle resizing
   window.addEventListener("resize", () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -79,4 +67,5 @@
 
 </body>
 </html>
+
 
