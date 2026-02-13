@@ -5,41 +5,14 @@
   <title>Interactive Globe</title>
   <style>
     body { margin: 0; }
-    canvas { display: block; }
+    iframe { display: block; width: 100%; height: 100vh; border: none; }
   </style>
 </head>
 <body>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
-
-<script>
-// Scene setup
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight, 0.1, 1000);
-camera.position.z = 3;
-
-// Renderer
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-
-// Globe
-const geometry = new THREE.SphereGeometry(1, 32, 32);
-const texture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/earth_atmos_2048.jpg');
-const material = new THREE.MeshBasicMaterial({ map: texture });
-const globe = new THREE.Mesh(geometry, material);
-scene.add(globe);
-
-// Animation
-function animate() {
-  requestAnimationFrame(animate);
-  globe.rotation.y += 0.002;  // Rotate globe
-  renderer.render(scene, camera);
-}
-animate();
-</script>
+<!-- Embed Google Earth Web -->
+<iframe src="https://earth.google.com/earth/d/12DVz_CFDL79p4nvV8iaHKTSDzsD8W-ox?usp=sharing" 
+        allowfullscreen></iframe>
 
 </body>
 </html>
-
-
